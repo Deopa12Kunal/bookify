@@ -1,65 +1,71 @@
-import React,{useState,useEffect} from "react";
-import {useNavigate} from "react-router-dom"
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import {useFirebase} from '../context/firebase';
- const LoginPage =()=>{
-    const firebase = useFirebase();
-    const navigate = useNavigate();
-    const [email, setEmail] = useState('');
-    const [password, setpasword]= useState('');
-        // console.log(firebase);
-        useEffect(()=>{
-            if(firebase.isLoggedIn){
-                //navitage to home
-navigate("/");
-            }
-        },[firebase,navigate]);
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import { useFirebase } from "../context/firebase";
 
-     const handleSubmit = async(e)=>{
-e.preventDefault();
-console.log("Login user")
-  const result = await firebase.signinUserWithEmailAndPass
+const LoginPage = () => {
+  const firebase = useFirebase();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  (email,
-    password); 
-    console.log("Successfully", result);
+  useEffect(() => {
+    if (firebase.isLoggedIn) {
+      navigate("/login");
+    }
+  }, [firebase, navigate]);
 
-};
-    return(
-        <div className="container mt-5"> 
-<Form onSubmit={handleSubmit}>
-      <Form.Group className="mb-3" controlId="formBasicEmail">
-        <Form.Label>Email address</Form.Label>
-        <Form.Control 
-        onChange={(e)=>setEmail(e.target.value)}
-        value={email}
-        type="email" 
-        placeholder="Enter email" />
-       
-      </Form.Group>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Logging in user...");
+    try {
+      await firebase.signInUserWithEmailAndPass(email, password);
+      console.log("Successfully logged in");
+      navigate("/"); // Redirect to home page on successful login
+    } catch (error) {
+      console.error("Error logging in:", error.message);
+      // You can handle the error here, such as displaying a message to the user
+    }
+  };
 
-      <Form.Group className="mb-3" controlId="formBasicPassword">
-        <Form.Label>Password</Form.Label>
-        <Form.Control 
-        onChange={(e)=>setpasword(e.target.value)}
-        value={password}
-        type="password" 
-        placeholder="Password" />
-      </Form.Group>
-      <div>
-  <Button variant="primary" type="submit" style={{ marginRight: '10px' }}>
-    Login
-  </Button>
-  <Button 
-  onClick={firebase.siginWithGoogle}
-  className="" variant="danger" type="submit" style={{ display: 'block', marginTop: '10px' }}>
-    Sign in With Google
-  </Button>
-</div>
+  return (
+    <div className="container mt-5">
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Email address</Form.Label>
+          <Form.Control
+            type="email"
+            placeholder="Enter email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </Form.Group>
 
-    </Form>
+        <Form.Group className="mb-3" controlId="formBasicPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Form.Group>
+        <div>
+          <Button variant="primary" type="submit" style={{ marginRight: "10px" }}>
+            Login
+          </Button>
+          <Button
+            onClick={firebase.signInWithGoogle}
+            variant="danger"
+            style={{ display: "block", marginTop: "10px" }}
+          >
+            Sign in With Google
+          </Button>
         </div>
-    );
- };
-  export default LoginPage;
+      </Form>
+    </div>
+  );
+};
+
+export default LoginPage;

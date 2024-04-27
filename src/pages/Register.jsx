@@ -14,7 +14,7 @@ import {useFirebase} from '../context/firebase';
     useEffect(()=>{
       if(firebase.isLoggedIn){
           //navitage to home
-navigate("/");
+navigate("/register");
       }
   },[firebase,navigate]);
      const handleSubmit = async(e)=>{
