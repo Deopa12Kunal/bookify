@@ -31,7 +31,7 @@ const BookCard = (props) => {
           {props.displayName} and this book costs Rs.{props.price}
         </Card.Text>
       {/* <Button onClick={e=>(navigate(`/book/views/${props.uid}`))} variant="primary">Go somewhere</Button> */}
-      <Button onClick={() => navigate(`/book/views/${props.id}`)} variant="primary">Go somewhere</Button>
+      <Button onClick={() => navigate(`/book/views/${props.userID}`)} variant="primary">Go somewhere</Button>
     </Card.Body>
   </Card>
   

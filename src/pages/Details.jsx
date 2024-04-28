@@ -1,39 +1,50 @@
 import React, { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useParams } from "react-router-dom";
 import { useFirebase } from "../context/firebase";
 
+// const BookDetailPage = () => {
+//   const params = useParams();
+//   console.log(params);
+//   return<div>
+//     Book Details
+//   </div>
+// };
+// export default BookDetailPage;
 const BookDetailPage = () => {
   const params = useParams();
   const firebase = useFirebase();
 
   const [qty, setQty] = useState(1);
+
   const [data, setData] = useState(null);
   const [url, setURL] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+  console.log(data);
 
   useEffect(() => {
-    const fetchBookData = async () => {
-      try {
-        const bookData = await firebase.getBookById(params.bookId);
-        setData(bookData.data());
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching book:", error);
-        setLoading(false);
+    firebase.getBookById(params.bookId).then((value) => {
+      if (value) {
+        setData(value.data());
       }
-    };
-    fetchBookData();
-  }, [firebase, params.bookId]);
+    });
+  }, []);
+  
 
-
- 
   useEffect(() => {
-    firebase.getImageURL(data.imageURL).then((url) => setURL(url));
-  }, [data.imageURL, firebase]); 
+    if (data) {
+      const imageURL = data.imageURL;
+      firebase.getImageURL(imageURL).then((url) => setURL(url));
+    }
+  }, [data]);
 
-  if (loading) return <h1>Loading...</h1>;
-  if (!data) return <h1>No data found.</h1>;
+  const placeOrder = async () => {
+    const result = await firebase.placeOrder(params.bookId, qty);
+    console.log("Order Placed", result);
+  };
+
+  if (data == null) return <h1>Loading...</h1>;
 
   return (
     <div className="container mt-5">
@@ -41,7 +52,7 @@ const BookDetailPage = () => {
       <img src={url} width="50%" style={{ borderRadius: "10px" }} />
       <h1>Details</h1>
       <p>Price: Rs. {data.price}</p>
-      <p>ISBN Number: {data.isbn}</p>
+      <p>ISBN Number. {data.isbn}</p>
       <h1>Owner Details</h1>
       <p>Name: {data.displayName}</p>
       <p>Email: {data.userEmail}</p>
@@ -50,10 +61,13 @@ const BookDetailPage = () => {
         <Form.Control
           onChange={(e) => setQty(e.target.value)}
           value={qty}
-          type="number"
+          type="Number"
           placeholder="Enter Qty"
         />
       </Form.Group>
+      <Button onClick={placeOrder} variant="success">
+        Buy Now
+      </Button>
     </div>
   );
 };

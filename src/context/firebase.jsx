@@ -88,11 +88,27 @@ export const FirebaseProvider =(props)=>{
       // TODO: creating a function , from where we can fetch the details using that : userID
       // function works: whenever we will pass a id of a book this function
       // will return me the book
-      const getBookById =  async(userID)=>{
-        const docRef = doc(firestore,"books", userID) ;
-        const result = await getDoc(docRef)
-        return result;
+      // const getBookById =  async(userID)=>{
+      //   const docRef = doc(firestore,"books", userID) ;
+      //   const result = await getDoc(docRef)
+      //   return result;
+      // };
+      const getBookById = async (userID) => {
+        try {
+          const docRef = doc(firestore, "books", userID);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            return docSnap.data(); // Return the data of the document
+          } else {
+            console.log("No such document!");
+            return null;
+          }
+        } catch (error) {
+          console.error("Error fetching book details:", error);
+          return null;
+        }
       };
+      
       //TODO: Creating a method to get image url
       // const getImageURL = (path)=>{
       //   return getDownloadURL(ref(storage,path));
